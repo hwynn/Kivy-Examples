@@ -7,7 +7,9 @@ from kivy.properties import ListProperty
 from kivy.factory import Factory
 
 """
-We want to see how to make buttons actually do something. 
+We want to see how to make buttons actually do something.
+This should be a good way to show off how to bind buttons to functions and make them
+effect specific widgets.
 """
 
 #https://www.reddit.com/r/kivy/comments/86603w/assigning_functions_to_custom_widgets_outside_of/
@@ -22,19 +24,22 @@ Builder.load_string('''
         pos: (220, 220)
         background_normal: ''
         background_color: 1, 1, 1, 1
-        group: 'target'        
+        group: 'target'
+        on_press: self.lowerAllRGB()      
     Button:
         text: 'A'
         size_hint: (None, None)
         size: (40, 40)
         pos: (40, 40)
         group: 'action'
+        on_press: root.targetIntel()
     Button:
         text: 'B'
         size_hint: (None, None)
         size: (40, 40)
         pos: (100, 40)
         group: 'action'
+        on_press: root.resetTarget()
     Button:
         text: 'L'
         size_hint: (None, None)
@@ -111,8 +116,20 @@ class RootWidget(FloatLayout):
     def __init__(self, **kwargs):
         super(RootWidget, self).__init__(**kwargs)
 
+    def targetIntel(self):
+        f_target = self.ids['targetbutton']
+        print("position:\t",f_target.pos)
+        print("color:\t",f_target.background_color)
+        return True #I'm still not 100% certain why we add this
+
+    def resetTarget(self):
+        f_target = self.ids['targetbutton']
+        f_target.pos = (220, 220)
+        f_target.background_color = (1.0, 1.0, 1.0, 1.0)
+        return True
+
 class TargetButton(Button):
-    bcolor = ListProperty([1, 1, 1, 1])
+    bcolor = ListProperty([1.0, 1.0, 1.0, 1.0])
 
     def __init__(self, **kwargs):
         super(TargetButton, self).__init__(**kwargs)
@@ -129,15 +146,15 @@ class TargetButton(Button):
         if p_num > 3 or p_num < 0:
             return True
         if p_num == 0:
-            f_y = f_y + 5;
+            f_y = f_y + 5
         elif p_num == 1:
-            f_x = f_x + 5;
+            f_x = f_x + 5
         elif p_num == 2:
             if f_y>=5:
-                f_y = f_y - 5;
+                f_y = f_y - 5
         elif p_num == 3:
             if f_x >= 5:
-                f_x = f_x - 5;
+                f_x = f_x - 5
         self.pos = (f_x, f_y)
         return True
 
@@ -147,25 +164,35 @@ class TargetButton(Button):
             return True
         if p_num == 0:
             if f_r <= 0.9:
-                f_r = f_r + 0.1;
+                f_r = f_r + 0.1
         elif p_num == 1:
             if f_g <= 0.9:
-                f_g = f_g + 0.1;
+                f_g = f_g + 0.1
         elif p_num == 2:
             if f_b <= 0.9:
-                f_b = f_b + 0.1;
+                f_b = f_b + 0.1
         elif p_num == 3:
             if f_r >= 0.1:
-                f_r = f_r - 0.1;
+                f_r = f_r - 0.1
         elif p_num == 4:
             if f_g >= 0.1:
-                f_g = f_g - 0.1;
+                f_g = f_g - 0.1
         elif p_num == 5:
             if f_b >= 0.1:
-                f_b = f_b - 0.1;
+                f_b = f_b - 0.1
         self.background_color = (f_r, f_g, f_b, f_a)
         return True
 
+    def lowerAllRGB(self):
+        f_r, f_g, f_b, f_a = self.background_color
+        if f_r >= 0.1:
+            f_r = f_r - 0.1
+        if f_g >= 0.1:
+            f_g = f_g - 0.1
+        if f_b >= 0.1:
+            f_b = f_b - 0.1
+        self.background_color = (f_r, f_g, f_b, f_a)
+        return True
 
 class TestApp(App):
     def build(self):
