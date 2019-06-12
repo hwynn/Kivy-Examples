@@ -32,7 +32,7 @@ Builder.load_string('''
         size: (40, 40)
         pos: (40, 40)
         group: 'action'
-        on_press: root.guessNextTarget()
+        on_press: root.createNextTarget()
     Button:
         text: 'B'
         size_hint: (None, None)
@@ -128,7 +128,11 @@ class RootWidget(FloatLayout):
         f_target.background_color = (1.0, 1.0, 1.0, 1.0)
         return True
 
-    def guessNextTarget(self):
+    def countTargets(self):
+        #print(str(self.children[-1].__class__.__name__)) #this is how to get an object type as a string!
+        return [str(x.__class__.__name__) for x in self.children if x != None].count('TargetButton')
+
+    def createNextTarget(self):
         """
         id: targetbutton0
         size_hint: (None, None)
@@ -139,9 +143,9 @@ class RootWidget(FloatLayout):
         group: 'target'
         on_press: self.lowerAllRGB()
         """
-        f_targetNumber = 1
+        f_targetNumber = self.countTargets()
         f_nextID = "targetbutton"+str(f_targetNumber)
-        f_nextposX = 220+10+60
+        f_nextposX = 220+(10+60)*f_targetNumber
         f_nextposY = 220
         f_nextsizeX = 60
         f_nextsizeY = 60
@@ -149,8 +153,7 @@ class RootWidget(FloatLayout):
         f_backgroundcolor = [1, 1, 1, 1]
         f_group = 'target'
         f_onpress = TargetButton.lowerAllRGB
-        print('yeah it works')
-        f_nextButton = Button(id=f_nextID ,
+        f_nextButton = TargetButton(id=f_nextID ,
                                size_hint=(None, None),
                                pos=(f_nextposX, f_nextposY),
                                size=(f_nextsizeX, f_nextsizeY),
