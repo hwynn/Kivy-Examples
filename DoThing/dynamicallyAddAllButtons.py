@@ -5,36 +5,26 @@ from kivy.uix.button import Button
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ListProperty
 from kivy.factory import Factory
+from kivy.properties import DictProperty
 
 """
-We want to see how to make buttons actually do something.
-This should be a good way to show off how to bind buttons to functions and make them
-effect specific widgets.
+We're now adding buttons dynamically.
+We add the first button dynamically. So we have to change the way we access it.
 """
 
-#https://www.reddit.com/r/kivy/comments/86603w/assigning_functions_to_custom_widgets_outside_of/
-
+#https://stackoverflow.com/questions/56587838/access-dynamically-added-widget-with-id
 
 Builder.load_string('''
-<RootWidget>:
-    TargetButton:
-        id: targetbutton0
-        size_hint: (None, None)
-        size: (60, 60)
-        pos: (220, 220)
-        background_normal: ''
-        background_color: 1, 1, 1, 1
-        group: 'target'
-        on_press: self.lowerAllRGB()      
+<RootWidget>:  
     Button:
-        text: 'A'
+        text: 'Add'
         size_hint: (None, None)
         size: (40, 40)
         pos: (40, 40)
         group: 'action'
         on_press: root.createNextTarget()
     Button:
-        text: 'B'
+        text: 'res'
         size_hint: (None, None)
         size: (40, 40)
         pos: (100, 40)
@@ -46,129 +36,117 @@ Builder.load_string('''
         size: (20, 40)
         pos: (160, 40)
         group: 'move'
-        on_press: targetbutton0.shiftTargetPos(3)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetPos(3)
     Button:
         text: 'R'
         size_hint: (None, None)
         size: (20, 40)
         pos: (220, 40)
         group: 'move'
-        on_press: targetbutton0.shiftTargetPos(1)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetPos(1)
     Button:
         text: 'U'
         size_hint: (None, None)
         size: (40, 20)
         pos: (180, 80)
         group: 'move'
-        on_press: targetbutton0.shiftTargetPos(0)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetPos(0)
     Button:
         text: 'D'
         size_hint: (None, None)
         size: (40, 20)
         pos: (180, 20)
         group: 'move'
-        on_press: targetbutton0.shiftTargetPos(2)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetPos(2)
     Button:
         text: 'R^'
         size_hint: (None, None)
         size: (40, 20)
         pos: (260, 70)
         group: 'color'
-        on_press: targetbutton0.shiftTargetCol(0)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetCol(0)
     Button:
         text: 'G^'
         size_hint: (None, None)
         size: (40, 20)
         pos: (320, 70)
         group: 'color'
-        on_press: targetbutton0.shiftTargetCol(1)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetCol(1)
     Button:
         text: 'B^'
         size_hint: (None, None)
         size: (40, 20)
         pos: (380, 70)
         group: 'color'
-        on_press: targetbutton0.shiftTargetCol(2)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetCol(2)
     Button:
         text: 'Rv'
         size_hint: (None, None)
         size: (40, 20)
         pos: (260, 30)
         group: 'color'
-        on_press: targetbutton0.shiftTargetCol(3)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetCol(3)
     Button:
         text: 'Gv'
         size_hint: (None, None)
         size: (40, 20)
         pos: (320, 30)
         group: 'color'
-        on_press: targetbutton0.shiftTargetCol(4)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetCol(4)
     Button:
         text: 'Bv'
         size_hint: (None, None)
         size: (40, 20)
         pos: (380, 30)
         group: 'color'
-        on_press: targetbutton0.shiftTargetCol(5)
+        on_press: root.dynamic_ids['targetbutton0'].shiftTargetCol(5)
 ''')
 
 class RootWidget(FloatLayout):
+    dynamic_ids = DictProperty({})  # declare class attribute, dynamic_ids
+
     def __init__(self, **kwargs):
         super(RootWidget, self).__init__(**kwargs)
+        #note: self.ids isn't populated yet. We can't use it yet.
+        self.createNextTarget()
 
     def targetIntel(self):
-        f_target = self.ids['targetbutton0']
+        f_target = self.dynamic_ids['targetbutton0']
         print("position:\t",f_target.pos)
         print("color:\t",f_target.background_color)
         return True #I'm still not 100% certain why we add this
 
     def resetTarget(self):
-        f_target = self.ids['targetbutton0']
-        f_target.pos = (220, 220)
-        f_target.background_color = (1.0, 1.0, 1.0, 1.0)
+        f_target = self.dynamic_ids['targetbutton0']
+        f_target.pos = (80, 220)
+        f_target.background_color = (0.7, 0.7, 0.7, 1.0)
         return True
-
+    
     def countTargets(self):
         #print(str(self.children[-1].__class__.__name__)) #this is how to get an object type as a string!
         return [str(x.__class__.__name__) for x in self.children if x != None].count('TargetButton')
 
     def createNextTarget(self):
-        """
-        id: targetbutton0
-        size_hint: (None, None)
-        size: (60, 60)
-        pos: (220, 220)
-        background_normal: ''
-        background_color: 1, 1, 1, 1
-        group: 'target'
-        on_press: self.lowerAllRGB()
-        """
-        f_targetNumber = self.countTargets()
-        f_nextID = "targetbutton"+str(f_targetNumber)
-        f_nextposX = self.ids['targetbutton0'].x+(10+60)*f_targetNumber
+        #dynamically add new button
+        f_id = "targetbutton" + str(self.countTargets())
+        f_nextposX = 80 + (10 + 60) * self.countTargets()
         f_nextposY = 220
         f_nextsizeX = 60
         f_nextsizeY = 60
-        f_background = ''
-        f_backgroundcolor = [1, 1, 1, 1]
-        f_group = 'target'
-        f_onpress = TargetButton.lowerAllRGB
-        f_nextButton = TargetButton(id=f_nextID ,
+        f_nextButton = TargetButton(id=f_id ,
+                               text="btn"+str(self.countTargets()),
                                size_hint=(None, None),
                                pos=(f_nextposX, f_nextposY),
                                size=(f_nextsizeX, f_nextsizeY),
-                               background_normal = f_background,
-                               background_color = (f_backgroundcolor[0],
-                                                   f_backgroundcolor[1],
-                                                   f_backgroundcolor[2],
-                                                   f_backgroundcolor[3]),
-                               group = f_group)
+                               background_normal = '',
+                               background_color=(0.7, 0.7, 0.7, 1.0),
+                               group = 'target')
         self.add_widget(f_nextButton)
-        f_nextButton.bind(on_press=f_onpress)
-
+        self.dynamic_ids[f_id] = f_nextButton
+        f_nextButton.bind(on_press=TargetButton.lowerAllRGB)
 
 class TargetButton(Button):
-    bcolor = ListProperty([1.0, 1.0, 1.0, 1.0])
+    bcolor = ListProperty([0.7, 0.7, 0.7, 1.0])
 
     def __init__(self, **kwargs):
         super(TargetButton, self).__init__(**kwargs)
