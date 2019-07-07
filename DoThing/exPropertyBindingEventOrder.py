@@ -26,9 +26,9 @@ class RootWidget(BoxLayout):
         self.add_widget(Button(text='btn 2'))
 
     def btn_pressed(self, instance, pos):
-        print("btn_pressed()")
-        print('pos: printed from root widget: {pos}'.format(pos=pos))
-        print('we also have a thing: {x}'.format(x=instance.c_thing))
+        print("RootWidget.btn_pressed()")
+        print('RootWidget.btn_pressed()\tpos: {pos}'.format(pos=pos))
+        print('RootWidget.btn_pressed()\tthing: {x}'.format(x=instance.c_thing))
 
 class CustomBtn(Widget):
     pressed = ListProperty([0, 0])
@@ -41,7 +41,8 @@ class CustomBtn(Widget):
             #so this function gets interupted here
             #but for some reason, btn_pressed() is also called before this
             self.c_thing = 38
-            print('other thing is {x}'.format(x=self.c_thing))
+            print('CustomBtn.on_touch_down()\tthing: {x}'.format(x=self.c_thing))
+            print()
             # we consumed the touch. return False here to propagate
             # the touch further to the children.
             return False
@@ -49,8 +50,8 @@ class CustomBtn(Widget):
 
     # function bound to 'pressed' within the class that the 'pressed' property was defined
     def on_pressed(self, instance, pos):
-        print("on_pressed()")
-        print('pressed at {pos}'.format(pos=pos))
+        print("CustomBtn.on_pressed()")
+        print('CustomBtn.on_pressed()\t\tpos: {pos}'.format(pos=pos))
 
 
 class TestApp(App):
