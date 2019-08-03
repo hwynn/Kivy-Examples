@@ -1,0 +1,4 @@
+[submodule "adaptive-grid-layout"]
+	path = lib/modules/adaptive-grid-layout
+	url = https://github.com/kivy-utilities/adaptive-grid-layout.git
+	branch = master
