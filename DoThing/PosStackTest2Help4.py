@@ -14,7 +14,7 @@ from lib.modules.adaptive_grid_layout import Adaptive_GridLayout
 #So this adaptive layout itself is dynamically adding StretchingLabel
 Builder.load_string('''
 <StretchingLabel>:
-    padding: 10, 5
+    padding: 10, 6
     size_hint_y: None
     text_size: self.width, None
     height: self.texture_size[1]
@@ -27,7 +27,7 @@ Builder.load_string('''
             size: self.size
 <Resizing_GridLayout>:
     cols: 1
-    row_force_default: True
+    row_force_default: False
 <ResizingRow_GridLayout>:
     cols: 1
     height: sum([c.height for c in self.children])
@@ -78,6 +78,65 @@ Builder.load_string('''
                     text: 'Button three'
 ''')
 
+def showMaybeText(p_widget):
+    #prints text of widget if widget has text
+    try: print(p_widget.text, end='')
+    except: pass
+
+def heightScan(p_widget, p_level):
+    #prints height of all widgets in the tree. used for debugging
+    for i_child in reversed(list(p_widget.children)):
+        print('\t' * p_level, end='')
+        print(i_child, end='')
+        showMaybeText(i_child)
+        print()
+        print('\t' * p_level, end='')
+        print("height: ", i_child.height)
+        heightScan(i_child, p_level + 1)
+
+def assess_widget(p_widget):
+    #this is a recursive function that will determine the total size and position of items inside a widget
+    #this is also used for debugging
+    #Note: this has a bug with calculating absolute positions in nested wigdets
+    f_max_x = None
+    f_max_y = None
+    f_min_x = None
+    f_min_y = None
+    try:
+        for i_child in reversed(list(p_widget.children)):
+            if f_max_x==None:
+                f_max_x = i_child.pos[0]+i_child.width
+            elif (i_child.pos[0]+i_child.width) > f_max_x:
+                f_max_x = i_child.pos[0] + i_child.width
+            if f_max_y==None:
+                f_max_y = i_child.pos[1]+i_child.height
+            elif (i_child.pos[1]+i_child.height) > f_max_y:
+                f_max_y = i_child.pos[1]+i_child.height
+            if f_min_x==None:
+                f_min_x = i_child.pos[0]
+            elif i_child.pos[0] < f_min_x:
+                f_min_x = i_child.pos[0]
+            if f_min_y==None:
+                f_min_y = i_child.pos[1]
+            elif i_child.pos[1] < f_min_y:
+                f_min_y = i_child.pos[1]
+        #return (position, size)
+        return ((f_min_x,f_min_y),((f_max_x-f_min_x),(f_max_y-f_min_y)))
+    except:
+        return ((p_widget.pos[0],p_widget.pos[1]),(p_widget.width, p_widget.height))
+
+def boundryScan(p_widget, p_level):
+    #prints height of all widgets in the tree. used for debugging
+    for i_child in reversed(list(p_widget.children)):
+        print('\t' * p_level, end='')
+        print(i_child, end='')
+        showMaybeText(i_child)
+        print()
+        print('\t' * p_level, assess_widget(i_child))
+        boundryScan(i_child, p_level + 1)
+
+
+
 class StretchingLabel(Label):
     edit = BooleanProperty(False)
     textinput = ObjectProperty(None, allownone=True)
@@ -126,7 +185,10 @@ class Resizing_GridLayout(GridLayout):
         Clock.schedule_once(lambda dt: self.calc_height(), timeout=0.1)
 
     def calc_height(self):
-        foo = [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+        print("Resizing_GridLayout.calc_height()", enumerate(reversed(list(self.children))))
+        #boundryScan(self, 0)
+        #foo = [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+        print("Resizing_GridLayout.calc_height()", self.rows_minimum)
 
     def on_height(self, instance, value):
         print("Resizing_GridLayout.on_height()", self.height)
@@ -162,12 +224,14 @@ class ResizingFrame(Adaptive_GridLayout):
 class ContainerBox(BoxLayout):
     def __init__(self, **kwargs):
         super(ContainerBox, self).__init__(**kwargs)
+        #Clock.schedule_once(lambda dt: heightScan(self, 0), timeout=4)
+        Clock.schedule_once(lambda dt: boundryScan(self, 0), timeout=4)
 
 class Nested2App(App):
     def build(self):
         return ContainerBox()
 
-    def on_stop(self):
+    def debug_specific(self):
         print()
         print("Nested2App.on_start: starting")
         f_Resizing_Grid = self.root.children[0]
@@ -185,6 +249,10 @@ class Nested2App(App):
         print("\tf_FreshLabel size: \t\t", f_FreshLabel.size, "\t\theight:", f_FreshLabel.height)
         print("\tf_FreshLabel padding: \t\t", f_FreshLabel.padding)
         print("\tf_FreshLabel pos: \t\t\t", f_FreshLabel.pos)
+
+    def on_stop(self):
+        #self.debug_specific()
+        pass
 
 
 if __name__ == '__main__':
