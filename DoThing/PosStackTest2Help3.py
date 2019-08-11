@@ -15,10 +15,8 @@ from lib.modules.adaptive_grid_layout import Adaptive_GridLayout
 # So this adaptive layout itself is dynamically adding GreyLabel
 Builder.load_string('''
 <GreyLabel>:
-    size_hint_y: None
-
+    #size_hint_y: None
     height: 30
-
     canvas.before:
         Color:
             rgba: .7, .7, .7, 1
@@ -28,7 +26,7 @@ Builder.load_string('''
 
 <Resizing_GridLayout>:
     cols: 1
-    row_force_default: True
+    row_force_default: False
 <ResizingRow_GridLayout>:
     cols: 1
     height: sum([c.height for c in self.children])
@@ -41,11 +39,14 @@ Builder.load_string('''
             id: Row1
             cols: 1
             grow_rows: True
+            #restrict_x: True
         Adaptive_GridLayout:
             id: Row2
             cols: 1
             grow_rows: True
+            #restrict_x: True
             Label:
+                #size_hint_y: None
                 height: 30
                 text: 'Label One'
                 canvas.before:
@@ -55,6 +56,7 @@ Builder.load_string('''
                         pos: self.pos
                         size: self.size
             TextInput:
+                #size_hint_y: None
                 height: 30
                 multiline: False
                 write_tab: False
@@ -64,11 +66,14 @@ Builder.load_string('''
             id: Row3
             cols: 1
             grow_rows: True
+            #restrict_x: True
             Label:
+                size_hint_y: None
                 height: 45
                 text: 'Label two'
             Button:
                 text: 'Button One'
+                #size_hint_y: None
                 height: 60
             GridLayout:
                 rows: 1
@@ -150,16 +155,19 @@ class Resizing_GridLayout(GridLayout):
         Clock.schedule_once(lambda dt: self.calc_height(), timeout=0.1)
 
     def calc_height(self):
-        foo = [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+        print("Resizing_GridLayout.calc_height()", enumerate(reversed(list(self.children))))
+        #boundryScan(self, 0)
+        #foo = [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+        print("Resizing_GridLayout.calc_height()", self.rows_minimum)
 
     def on_height(self, instance, value):
-        print("Resizing_GridLayout.on_height()", self.height)
+        #print("Resizing_GridLayout.on_height()", self.height)
+        pass
 
 
 class ResizingRow_GridLayout(GridLayout):
     def __init__(self, **kwargs):
         super(ResizingRow_GridLayout, self).__init__(**kwargs)
-
 
 class ResizingFrame(Adaptive_GridLayout):
     c_value = StringProperty('SomeThing goes here')
@@ -189,14 +197,14 @@ class ResizingFrame(Adaptive_GridLayout):
 class ContainerBox(BoxLayout):
     def __init__(self, **kwargs):
         super(ContainerBox, self).__init__(**kwargs)
+        #Clock.schedule_once(lambda dt: heightScan(self, 0), timeout=4)
         Clock.schedule_once(lambda dt: boundryScan(self, 0), timeout=4)
-
 
 class Nested2App(App):
     def build(self):
         return ContainerBox()
 
-    def on_stop(self):
+    def debug_specific(self):
         print()
         print("Nested2App.on_start: starting")
         f_Resizing_Grid = self.root.children[0]
@@ -214,6 +222,10 @@ class Nested2App(App):
         print("\tf_FreshLabel size: \t\t", f_FreshLabel.size, "\t\theight:", f_FreshLabel.height)
         print("\tf_FreshLabel padding: \t\t", f_FreshLabel.padding)
         print("\tf_FreshLabel pos: \t\t\t", f_FreshLabel.pos)
+
+    def on_stop(self):
+        #self.debug_specific()
+        pass
 
 
 if __name__ == '__main__':
