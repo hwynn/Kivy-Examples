@@ -6,8 +6,6 @@ from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.properties import StringProperty
-from kivy.uix.textinput import TextInput
-from kivy.properties import BooleanProperty, ObjectProperty
 from lib.modules.adaptive_grid_layout import Adaptive_GridLayout
 
 # GreyLabel will be dynamically added to ResizingFrame inside the first ResizingRow
@@ -24,29 +22,20 @@ Builder.load_string('''
             pos: self.pos
             size: self.size
 
-<Resizing_GridLayout>:
-    cols: 1
-    row_force_default: False
-<ResizingRow_GridLayout>:
-    cols: 1
-    height: sum([c.height for c in self.children])
-
 <ContainerBox>:
     orientation: 'horizontal'
-
-    Resizing_GridLayout:
+    GridLayout:
+        cols: 1
+        row_force_default: False
         ResizingFrame:
             id: Row1
             cols: 1
             grow_rows: True
-            #restrict_x: True
         Adaptive_GridLayout:
             id: Row2
             cols: 1
             grow_rows: True
-            #restrict_x: True
             Label:
-                #size_hint_y: None
                 height: 30
                 text: 'Label One'
                 canvas.before:
@@ -56,7 +45,6 @@ Builder.load_string('''
                         pos: self.pos
                         size: self.size
             TextInput:
-                #size_hint_y: None
                 height: 30
                 multiline: False
                 write_tab: False
@@ -66,14 +54,11 @@ Builder.load_string('''
             id: Row3
             cols: 1
             grow_rows: True
-            #restrict_x: True
             Label:
-                size_hint_y: None
                 height: 45
                 text: 'Label two'
             Button:
                 text: 'Button One'
-                #size_hint_y: None
                 height: 60
             GridLayout:
                 rows: 1
@@ -84,26 +69,26 @@ Builder.load_string('''
                     text: 'Button three'
 ''')
 
+#--------------Debugging functions---------------------
+
 def showMaybeText(p_widget):
     #prints text of widget if widget has text
-    try: print(p_widget.text, end='')
-    except: pass
+    try: print(p_widget.text)
+    except: print()
 
 def heightScan(p_widget, p_level):
     #prints height of all widgets in the tree. used for debugging
     for i_child in reversed(list(p_widget.children)):
-        print('\t' * p_level, end='')
-        print(i_child, end='')
+        print('\t' * p_level, i_child, end='')
         showMaybeText(i_child)
-        print()
-        print('\t' * p_level, end='')
-        print("height: ", i_child.height)
+        print('\t' * p_level, "height: ", i_child.height)
         heightScan(i_child, p_level + 1)
 
 def assess_widget(p_widget):
-    #this is a recursive function that will determine the total size and position of items inside a widget
-    #this is also used for debugging
+    #this is a function that will determine the total size and position of items INSIDE a widget
+    #this is used for debugging
     #Note: this has a bug with calculating absolute positions in nested wigdets
+    #return: ((x position, y position),(x size/width, y size/height))
     f_max_x = None
     f_max_y = None
     f_min_x = None
@@ -134,44 +119,20 @@ def assess_widget(p_widget):
 def boundryScan(p_widget, p_level):
     #prints height of all widgets in the tree. used for debugging
     for i_child in reversed(list(p_widget.children)):
-        print('\t' * p_level, end='')
-        print(i_child, end='')
+        print('\t' * p_level, i_child, end='')
         showMaybeText(i_child)
-        print()
         print('\t' * p_level, assess_widget(i_child))
         boundryScan(i_child, p_level + 1)
 
+#--------------kivy classes----------------------
 
 class GreyLabel(Label):
-
     def __init__(self, **kwargs):
         super(GreyLabel, self).__init__(**kwargs)
         #self.padding = (10, 10)
 
-
-class Resizing_GridLayout(GridLayout):
-    def __init__(self, **kwargs):
-        super(Resizing_GridLayout, self).__init__(**kwargs)
-        Clock.schedule_once(lambda dt: self.calc_height(), timeout=0.1)
-
-    def calc_height(self):
-        print("Resizing_GridLayout.calc_height()", enumerate(reversed(list(self.children))))
-        #boundryScan(self, 0)
-        #foo = [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
-        print("Resizing_GridLayout.calc_height()", self.rows_minimum)
-
-    def on_height(self, instance, value):
-        #print("Resizing_GridLayout.on_height()", self.height)
-        pass
-
-
-class ResizingRow_GridLayout(GridLayout):
-    def __init__(self, **kwargs):
-        super(ResizingRow_GridLayout, self).__init__(**kwargs)
-
 class ResizingFrame(Adaptive_GridLayout):
     c_value = StringProperty('SomeThing goes here')
-
     def __init__(self, **kwargs):
         super(ResizingFrame, self).__init__(**kwargs)
         Clock.schedule_once(lambda dt: self.makeLabel(), timeout=0.1)
@@ -193,40 +154,16 @@ class ResizingFrame(Adaptive_GridLayout):
         self.trigger_refresh_y_dimension()
         # the same behaviour can be seen if you double click the stretching label and enter a change
 
-
 class ContainerBox(BoxLayout):
     def __init__(self, **kwargs):
         super(ContainerBox, self).__init__(**kwargs)
+        #Debugging statements
         #Clock.schedule_once(lambda dt: heightScan(self, 0), timeout=4)
-        Clock.schedule_once(lambda dt: boundryScan(self, 0), timeout=4)
+        #Clock.schedule_once(lambda dt: boundryScan(self, 0), timeout=4)
 
 class Nested2App(App):
     def build(self):
         return ContainerBox()
-
-    def debug_specific(self):
-        print()
-        print("Nested2App.on_start: starting")
-        f_Resizing_Grid = self.root.children[0]
-        f_ResizingFrame = self.root.children[0].children[2]
-        f_FreshLabel = f_ResizingFrame.children[0]
-        print("\tf_Resizing_Grid size: \t", f_Resizing_Grid.size, "\t\theight:", f_Resizing_Grid.height)
-        print("\tf_Resizing_Grid rmin: \t\t", f_Resizing_Grid.rows_minimum)
-        print("\tf_Resizing_Grid pos: \t\t", f_Resizing_Grid.pos)
-
-        print("\tf_ResizingFrame size: \t\t", f_ResizingFrame.size, "\t\theight:", f_ResizingFrame.height)
-        print("\tf_ResizingFrame rmin: \t\t", f_ResizingFrame.rows_minimum)
-        print("\tf_ResizingFrame padding: \t\t", f_ResizingFrame.padding)
-        print("\tf_ResizingFrame pos: \t\t\t", f_ResizingFrame.pos)
-
-        print("\tf_FreshLabel size: \t\t", f_FreshLabel.size, "\t\theight:", f_FreshLabel.height)
-        print("\tf_FreshLabel padding: \t\t", f_FreshLabel.padding)
-        print("\tf_FreshLabel pos: \t\t\t", f_FreshLabel.pos)
-
-    def on_stop(self):
-        #self.debug_specific()
-        pass
-
 
 if __name__ == '__main__':
     Nested2App().run()
