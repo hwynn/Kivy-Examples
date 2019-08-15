@@ -2,168 +2,112 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
+from kivy.graphics import Color
+from kivy.factory import Factory
+from kivy.clock import Clock
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty
 from kivy.uix.textinput import TextInput
-from kivy.properties import BooleanProperty
+from kivy.properties import BooleanProperty, ObjectProperty, ListProperty
 import SimulateOutside
 
 Builder.load_string('''
-<StretchDataBox>:
+<StretchingLabel>:
+    padding: 10, 5
     size_hint_y: None
     text_size: self.width, None
     height: self.texture_size[1]
     group: 'test'
     canvas.before:
         Color:
-            rgba: .7, .7, .7, 1
+            rgba: self.bcolor
         Rectangle:
             pos: self.pos
             size: self.size
-
-<ImgData2>:
-    id: Img_Data2
-	BoxLayout:
-		orientation: 'vertical'
-		size: root.size
-		pos: root.pos
-		Label:
-			text: 'Description'
-			size_hint_y: None
-			height: 30
-			bold: True
-        StretchDataBox:
-            text: Img_Data2.c_description
-            on_double_click: Img_Data2.openDescEditor()
-        DescDump:
-            on_text_validate: Img_Data2.updateDescription(self.text)
-            on_unfocus: Img_Data2.resumeDesc()
-        Label:
-
-<ContainerBox>:
-	orientation: 'horizontal'
-    Button:
-        text: 'h1'
-        group: 'test'
-    ImgData2:
 ''')
 
 g_filename = "exampleImg.jpg"
 
-class StretchDataBox(Label):
-    double_click = BooleanProperty(False)
-    def __init__(self, **kwargs):
-        super(StretchDataBox, self).__init__(**kwargs)
+
+class StretchingLabel(Label):
+    bcolor = ListProperty([.7, .7, .7, 1])
+    edit = BooleanProperty(False)
+    tempStr = StringProperty("")
+    textinput = ObjectProperty(None, allownone=True)
+    #Sometimes a user defocusses the text box, or hits enter without making an actual change
+    #This toggles when we get a legit change that isn't one of those false alarms
 
     def on_touch_down(self, touch):
-        if touch.is_double_tap:
-            self.double_click = not self.double_click
+        if self.collide_point(*touch.pos) and touch.is_double_tap and not self.edit:
+            self.edit = True
+        return super(StretchingLabel, self).on_touch_down(touch)
 
-    def on_double_click(self, instance, p_ignoreme):
-        print("StretchDataBox.on_double_click()")
-
-class DescBox(Label):
-    def __init__(self, **kwargs):
-        super(DescBox, self).__init__(**kwargs)
-
-class DescDump(TextInput):
-    unfocus = BooleanProperty(False)
-    validated = BooleanProperty(False)
-    def __init__(self, **kwargs):
-        super(DescDump, self).__init__(**kwargs)
-        #self.size_hint = (None, None)
-        #self.size = (100, 30)
-        #self.multiline = True
-        self.multiline = False
-        self.size_hint_y = None
-        self.height = 0
-
-    def on_focus(self, value, p_focus):
-        #this notices when a user unfocusses
-        print("DescDump.on_focus() ", p_focus)
-        if not p_focus:
-            #we want to "resume" the description on escape
-            #but not on enter. both trigger unfocus calls, so we check if this is enter
-            if not self.validated:
-                #we're toggling unfocus to trigger a property event
-                self.unfocus = not self.unfocus
-        else:
-            #print('User focused')
-            self.validated = False
-
-    def on_unfocus(self, instance, p_ignoreme):
-        #print("DescDump.on_unfocus() ")
-        pass
-
-    def on_text_validate(self):
-        #print("DescDump.on_text_validate() ")
-        self.validated = True
-
-
-class ImgData2(Widget):
-    c_description = StringProperty('Lorem ipsum dolor sit amet, consectetur adipiscing elit. \n\nProin vitae turpis ornare urna elementum pharetra non et tortor. Curabitur semper mattis viverra. \nPellentesque et lobortis purus, eu ultricies est. Nulla varius ac dolor quis mattis. Pellentesque vel accumsan tellus. Donec a nunc urna. Nulla convallis dignissim leo, tempor sagittis orci sollicitudin aliquet. Duis efficitur ex vel auctor ultricies. Etiam feugiat hendrerit mauris suscipit gravida. Quisque lobortis vitae ligula eget tristique. Nullam a nulla id enim finibus elementum eu sit amet elit.')
-    def __init__(self, **kwargs):
-        super(ImgData2, self).__init__(**kwargs)
-
-    def openDescEditor(self):
-        # shrink description box to 0 height
-        f_descBox = self.children[0].children[2]
-        # expand descdump to the description box's former size
-        f_descDump = self.children[0].children[1]
-        #but first, we want to transfer the text
-        #The editor box isn't fancy, it just modifies what the description is
-        f_text = f_descBox.text
-        f_height = f_descBox.height
-        f_descBox.text = ""
-        f_descBox.height = 0
-        f_descDump.text = f_text
-        f_descDump.height = f_height
-        pass
-
-    def closeDescEditor(self):
-        #shink descdump
-        f_descDump = self.children[0].children[1]
-        #expand description box
-        f_descBox = self.children[0].children[2]
-        pass
-
-    def resumeDesc(self):
-        #this function is similar to closeDescEditor
-        #but it's called when a user unfocusses during an edit
-        #rather than when they submit during an edit.
-        #this function "saves" a description edit to c_description
-        #without actually changing the file.
-        #TODO: change color of description box to reflect unsaved changes
-        f_descDump = self.children[0].children[1]
-        f_descBox = self.children[0].children[2]
-        f_text = f_descDump.text
-        self.c_description = f_text
-        f_descDump.text = ""
-        f_descDump.height = 0
-
-    def updateDescription(self, value):
-        print("ImgData2.updateDescription()", value)
-        f_success = SimulateOutside.setDesc(g_filename, value)
-        f_descBox = self.children[0].children[2]
-        #print(f_descBox)
-        f_descDump = self.children[0].children[1]
-        #print(f_descDump)
-        if f_success:
-            #clear descdump, hide descdump
-            self.c_description = SimulateOutside.getDesc(g_filename)
-            #print("ImgData2.updateDescription()", f_descBox.text)
+    def on_edit(self, instance, value):
+        if not value:
+            if self.textinput:
+                self.remove_widget(self.textinput)
             return
-        else:
-            self.openDescEditor()
-            #print("ImgData2.updateDescription() didn't work")
+        self.textinput = t = TextInput(
+            text=self.text, size_hint=(None, None),
+            font_size=self.font_size, font_name=self.font_name,
+            pos=self.pos, size=self.size, multiline=False)
+        self.bind(pos=t.setter('pos'), size=t.setter('size'))
+        self.add_widget(self.textinput)
+        t.bind(on_text_validate=self.on_text_validate, focus=self.on_text_focus)
 
-class ContainerBox(BoxLayout):
+    def on_text_validate(self, instance):
+        #print("StretchingLabel.on_text_validate() new text:", instance.text)
+        self.tempStr = instance.text
+        self.edit = False
+
+    def on_text_focus(self, instance, focus):
+        if focus is False:
+            #If a used defocusses the text input without hitting "enter", the changes are discarded
+            #this allows the users to easily "back out" and revert their change if they accidentally messed it up
+            #self.tempStr = instance.text #so this is commented out
+            self.edit = False
+
+    def neutralizeColor(self):
+        print("StretchingLabel.neutralizeColor()")
+        self.bcolor = (.7, .7, .7, 1)
+
+    def agitateColor(self):
+        print("StretchingLabel.agitateColor()")
+        self.bcolor = (0.7, 0, 0, 1)
+
+
+class MyDescriptionFrame(Widget):
+    c_value = StringProperty(
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit. \n\nProin vitae turpis ornare urna elementum pharetra non et tortor. Curabitur semper mattis viverra. \nPellentesque et lobortis purus, eu ultricies est. Nulla varius ac dolor quis mattis. Pellentesque vel accumsan tellus. Donec a nunc urna. Nulla convallis dignissim leo, tempor sagittis orci sollicitudin aliquet. Duis efficitur ex vel auctor ultricies. Etiam feugiat hendrerit mauris suscipit gravida. Quisque lobortis vitae ligula eget tristique. Nullam a nulla id enim finibus elementum eu sit amet elit.')
+
     def __init__(self, **kwargs):
-        super(ContainerBox, self).__init__(**kwargs)
+        super(MyDescriptionFrame, self).__init__(**kwargs)
+        Clock.schedule_once(lambda dt: self.makeLabel(), timeout=0.1)
 
-class Nested2App(App):
-    def build(self):
-        return ContainerBox()
-     
-if __name__ == '__main__':
-    Nested2App().run()
+    def makeLabel(self):
+        #Before this, the stretch label doesn't exist.
+        #this creates the stretching label
+        c_label = StretchingLabel()
+        #this makes the text of the label be equal to the c_value of this MyDescriptionFrame
+        self.bind(pos=c_label.setter('pos'), width=c_label.setter('width'), c_value=c_label.setter('text'))
+        #the label has a 'tempStr' property. vvv this makes an update to tempStr trigger self.setValue
+        c_label.bind(tempStr=self.setValue)
+        self.add_widget(c_label)
+        Clock.schedule_once(lambda dt: self.chg_text(), 0.5)
+
+    def chg_text(self):
+        # this forces a property event so the label's text will be changed
+        self.property('c_value').dispatch(self)
+
+    def setValue(self, instance, p_val):
+        #this is an indirect way to set MyDescriptionFrame's c_value
+        #This is how StretchingLabel is able to communicate with
+        #print("MyDescriptionFrame.setValue() instance:", instance)
+        f_success = SimulateOutside.setDesc("samplefilename.jpg", p_val)
+        if f_success:
+            self.c_value = SimulateOutside.getDesc("samplefilename.jpg")
+        else:
+            print("MyDescriptionFrame.setValue() operation not successful")
+
+Factory.register('StretchingLabel', cls=StretchingLabel)
+Factory.register('MyDescriptionFrame', cls=MyDescriptionFrame)

@@ -8,9 +8,9 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.properties import StringProperty
 from kivy.uix.textinput import TextInput
 from kivy.properties import BooleanProperty, ObjectProperty
-
+#GreyLabel will be dynamically added to MyFrame inside the first ResizingRow
 Builder.load_string('''
-<GreyLabel@Label>:
+<GreyLabel>:
     height: 30
     canvas.before:
         Color:
@@ -22,7 +22,7 @@ Builder.load_string('''
 <Resizing_GridLayout@GridLayout>:
     cols: 1
     row_force_default: True
-    foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
+    #foo: [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
 <ResizingRow_GridLayout@GridLayout>:
     cols: 1
     height: sum([c.height for c in self.children])
@@ -69,11 +69,7 @@ class GreyLabel(Label):
 class Resizing_GridLayout(GridLayout):
     def __init__(self, **kwargs):
         super(Resizing_GridLayout, self).__init__(**kwargs)
-        #Clock.schedule_once(lambda dt: self.calc_height(), timeout=1)
-
-    def calc_height(self):
-        for i, x in enumerate(reversed(list(self.children))):
-            self.rows_minimum.update({i: x.height})
+        self.foo = [self.rows_minimum.update({i: x.height}) for i, x in enumerate(reversed(list(self.children)))]
 
 class ResizingRow_GridLayout(GridLayout):
     def __init__(self, **kwargs):

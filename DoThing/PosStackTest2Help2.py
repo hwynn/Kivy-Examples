@@ -8,7 +8,7 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.properties import StringProperty
 from kivy.uix.textinput import TextInput
 from kivy.properties import BooleanProperty, ObjectProperty
-
+#This now has StretchingLabel, which will change size to match it's dynamically changing contents
 Builder.load_string('''
 <StretchingLabel>:
     padding: 10, 5

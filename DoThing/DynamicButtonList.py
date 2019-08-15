@@ -86,6 +86,8 @@ class DynamicTagList(StackLayout):
         return True
 
     def delayedClose(self, arg):
+        print("DynamicTagList.delayedClose() arg:\t", arg)
+        print("DynamicTagList.delayedClose() type:\t", type(arg))
         #without lambda here, this would pass the timeout arguement to our function.
         Clock.schedule_once(lambda dt: self.closeTarget(arg.parent.parent.id), timeout=0.01)
 
