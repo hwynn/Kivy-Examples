@@ -94,6 +94,7 @@ class Adaptive_GridLayout(GridLayout):
         """ Resets 'self.height' using value returned by '_calc_min_height' method. """
         if self.c_debug: print("\t\tAdaptive_GridLayout._refresh_height():", self)
         if self.c_debug: print("\t\tself.height before:", self.height)
+        if self.c_debug: print("\t\tself.minimum_height before:", self.minimum_height)
         self.height = self._calc_min_height()
         #self._update_minimum_size() #this doesn't work, but it should do the same thing
         if self.c_debug: print("\t\tself.height after:", self.height)

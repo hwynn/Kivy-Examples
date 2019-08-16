@@ -28,125 +28,116 @@ Builder.load_string('''
         spacing: 10, 10
         ScrollView:
             size: self.size
-            GridLayout:
+            Adaptive_GridLayout:
                 id: layout_content
-                size_hint_y: None
                 cols: 1
-                spacing: 0, 0
-                padding: 0, 0
-                Adaptive_GridLayout:
-                    id: Row2
+                grow_rows: True
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                ResizingFrame:
+                    id: Row1
                     cols: 1
                     grow_rows: True
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    ResizingFrame:
-                        id: Row1
-                        cols: 1
-                        grow_rows: True
-                    Label:
-                        height: 30
-                        text: 'Label One'
-                        canvas.before:
-                            Color:
-                                rgba: .4, .4, .4, 1
-                            Rectangle:
-                                pos: self.pos
-                                size: self.size
-                    TextInput:
-                        height: 30
-                        multiline: False
-                        write_tab: False
-                        hint_text: 'Insert one liner'
-                    Label:
-                        height: 45
-                        text: 'Label two'
+                Label:
+                    height: 30
+                    text: 'Label One'
+                    canvas.before:
+                        Color:
+                            rgba: .4, .4, .4, 1
+                        Rectangle:
+                            pos: self.pos
+                            size: self.size
+                TextInput:
+                    height: 30
+                    multiline: False
+                    write_tab: False
+                    hint_text: 'Insert one liner'
+                Label:
+                    height: 45
+                    text: 'Label two'
+                Button:
+                    text: 'Button One'
+                    height: 60
+                GridLayout:
+                    rows: 1
+                    height: 25
                     Button:
-                        text: 'Button One'
-                        height: 60
-                    GridLayout:
-                        rows: 1
-                        height: 25
-                        Button:
-                            text: 'Button Two'
-                        Button:
-                            text: 'Button three'
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dkdsjahf lkasjkat"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsdodo dod dodo do dodt"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsdkjwww  ww woij ksdsdf sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-
-
-
+                        text: 'Button Two'
+                    Button:
+                        text: 'Button three'
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dkdsjahf lkasjkat"
+                Label:
+                    height: 20
+                    text: "Lorem ipsdodo dod dodo do dodt"
+                Label:
+                    height: 20
+                    text: "Lorem ipsdkjwww  ww woij ksdsdf sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
 ''')
 
 class ResizingFrame(Adaptive_GridLayout):

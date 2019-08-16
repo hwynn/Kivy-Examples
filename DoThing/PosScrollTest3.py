@@ -28,93 +28,87 @@ Builder.load_string('''
         spacing: 10, 10
         ScrollView:
             size: self.size
-            GridLayout:
+            Adaptive_GridLayout:
                 id: layout_content
-                size_hint_y: None
                 cols: 1
-                spacing: 0, 0
-                padding: 0, 0
-                Adaptive_GridLayout:
-                    id: Row2
-                    cols: 1
-                    grow_rows: True
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    StretchingLabel:
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dkdsjahf lkasjkat"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsdodo dod dodo do dodt"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsdkjwww  ww woij ksdsdf sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
-                    Label:
-                        height: 20
-                        text: "Lorem ipsum dolor sit amet"
+                grow_rows: True
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                StretchingLabel:
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dkdsjahf lkasjkat"
+                Label:
+                    height: 20
+                    text: "Lorem ipsdodo dod dodo do dodt"
+                Label:
+                    height: 20
+                    text: "Lorem ipsdkjwww  ww woij ksdsdf sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
+                Label:
+                    height: 20
+                    text: "Lorem ipsum dolor sit amet"
 
 
 
