@@ -19,96 +19,96 @@ from lib.modules.adaptive_grid_layout import Adaptive_GridLayout
 Builder.load_string('''    
 <Controller>:
     layout_content: layout_content
-    BoxLayout:
-        id: bl
-        orientation: 'vertical'
-        padding: 10, 10
-        row_default_height: '48dp'
-        row_force_default: True
-        spacing: 10, 10
-        ScrollView:
-            size: self.size
-            Adaptive_GridLayout:
-                id: layout_content
-                cols: 1
-                grow_rows: True
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                StretchingLabel:
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dkdsjahf lkasjkat"
-                Label:
-                    height: 20
-                    text: "Lorem ipsdodo dod dodo do dodt"
-                Label:
-                    height: 20
-                    text: "Lorem ipsdkjwww  ww woij ksdsdf sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
-                Label:
-                    height: 20
-                    text: "Lorem ipsum dolor sit amet"
+    orientation: 'horizontal'
+    padding: 10, 10
+    row_default_height: '48dp'
+    row_force_default: True
+    spacing: 10, 10
+    Button:
+        text: "Big button"
+    ScrollView:
+        size: self.size
+        Adaptive_GridLayout:
+            id: layout_content
+            cols: 1
+            grow_rows: True
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            StretchingLabel:
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dkdsjahf lkasjkat"
+            Label:
+                height: 20
+                text: "Lorem ipsdodo dod dodo do dodt"
+            Label:
+                height: 20
+                text: "Lorem ipsdkjwww  ww woij ksdsdf sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
+            Label:
+                height: 20
+                text: "Lorem ipsum dolor sit amet"
 
 
 
@@ -142,7 +142,7 @@ class ResizingFrame(Adaptive_GridLayout):
 
 
 
-class Controller(FloatLayout):
+class Controller(BoxLayout):
     layout_content=ObjectProperty(None)
 
     def __init__(self, **kwargs):

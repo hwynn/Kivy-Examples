@@ -57,7 +57,12 @@ class StretchingLabel(Label):
 
     def on_text_validate(self, instance):
         #print("StretchingLabel.on_text_validate() new text:", instance.text)
+        #print("StretchingLabel.on_text_validate() new text:", instance.text)
+        #this makes user input go through an external function before becoming label text
+        #In our case, it tries to write to a file, then the label will be what we read from the file
         self.tempStr = instance.text
+        #if you use this instead, the label text will be directly set from the user input
+        #self.text = instance.text
         self.edit = False
 
     def on_text_focus(self, instance, focus):
