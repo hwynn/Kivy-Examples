@@ -19,7 +19,7 @@ Builder.load_string('''
     pos_hint: {'x': .6, 'y': .2}
     pos: 200, 0
     auto_dismiss: False
-    title: 'Hello world!!'
+    title: 'When was this created/posted?'
 
 
 <ColorLabel>:
@@ -33,7 +33,6 @@ Builder.load_string('''
 <RootWidget>:
     orientation: 'vertical'
 ''')
-
 class ColorLabel(Label):
     bcolor = ListProperty([.7, .7, .7, 1])
 
@@ -50,17 +49,15 @@ class RootWidget(BoxLayout):
         super(RootWidget, self).__init__(**kwargs)
         # all of this stuff will need to be added into whatever user interface you use
         popup_trigger = DateEditButton()
-        self.top_label0 = ColorLabel(size_hint_y=None, height=50, text=str(datetime.strptime(popup_trigger.ISODateString, "%Y-%m-%dT%H:%M:%S")),
+        self.top_label0 = ColorLabel(size_hint_y=None, height=50,
                                      bcolor=[.6, .3, .4, 1])
-        self.top_label1 = ColorLabel(size_hint_y=None, height=50, text=str(popup_trigger.timeChunk1),
-                                     bcolor=[.6, .3, .4, 1])
-        self.top_label2 = ColorLabel(size_hint_y=None, height=50, text=str(popup_trigger.timeChunk2),
-                                     bcolor=[.6, .3, .4, 1])
+        if popup_trigger.hasDate:
+            self.top_label0.text=str(datetime.strptime(popup_trigger.ISODateString, "%Y-%m-%dT%H:%M:%S"))
+        else:
+            self.top_label0.text="No date given"
         # this detects changes in the series values and calls changes to the user interface be made
         popup_trigger.bind(ISODateString=self.update_date)
         self.add_widget(self.top_label0)
-        self.add_widget(self.top_label1)
-        self.add_widget(self.top_label2)
         self.add_widget(popup_trigger)
 
     def update_date(self, instance, value):
@@ -83,21 +80,29 @@ class SimplePopup(Popup):
 
 def isNumberBlank(p_str):
     #decides if string is useable number
-    #we will count '' as a number because we'll replace those with 0
+    #we will count '' as a number because we'll replace those with 0 or 1
     return ((p_str.isnumeric()) or (p_str==""))
 
-def getNumberBlank(p_str):
+def getNumberBlank0(p_str):
     #gives us a useable number from a string
     #p_str must be tested by isNumberBlank() before being passed to this function
     if(p_str==""):
         return 0
     return int(p_str)
 
+def getNumberBlank1(p_str):
+    #gives us a useable number from a string
+    #p_str must be tested by isNumberBlank() before being passed to this function
+    if(p_str==""):
+        return 1
+    return int(p_str)
+
 
 # this button is reuasable
 class DateEditButton(Button):
     # this is the button that triggers the popup being created
-    sampledate = datetime(1, 2, 3, 4, 5, 6)
+    hasDate = SimulateOutside.containsOrgDate(SimulateOutside.g_file)
+    sampledate = SimulateOutside.getOriginalDate(SimulateOutside.g_file)
     ISODateString = StringProperty(sampledate.isoformat())
     timeChunk1 = NumericProperty(sampledate.timetuple()[0])
     timeChunk2 = NumericProperty(sampledate.timetuple()[1])
@@ -115,10 +120,13 @@ class DateEditButton(Button):
     def setDateValue(self, p_ins):
         # this calls an outside script to set the series value in a picture file
         # then the new value is passed back to us for the user interface to display
+        # It should not be possible to call this function with bad input
+        # pop_submit() should check the input for this
         if self.c_debug > 0: print("DateEditButton.setDateValue:", p_ins)
         f_success = SimulateOutside.setOriginalDate(SimulateOutside.g_file, p_ins)
         if f_success:
             self.sampledate = SimulateOutside.getOriginalDate(SimulateOutside.g_file)
+            self.hasDate = True
             self.ISODateString = self.sampledate.isoformat()
             self.timeChunk1 = self.sampledate.timetuple()[0]
             self.timeChunk2 = self.sampledate.timetuple()[1]
@@ -138,44 +146,48 @@ class DateEditButton(Button):
     def pop_submit(self, instance):
         # this happens when the submit button on the popup is pressed.
         # this checks input, tells the program the input is ready, then closes the popup
-        f_timeInput1 = instance.parent.children[8]  # these are the text inputs with the values we will check
-        f_timeInput2 = instance.parent.children[7]
-        f_timeInput3 = instance.parent.children[6]
-        f_timeInput4 = instance.parent.children[5]
-        f_timeInput5 = instance.parent.children[4]
-        f_timeInput6 = instance.parent.children[3]
-        # if the input is invalid, the button shouldn't work.
-        # This lets the user know a mistake happened before their work is lost when the popup closes
+        if self.c_debug > 1: print("DateEditButton.pop_submit.instance.parent.children:", instance.parent.children)
+        if self.c_debug > 1: print("DateEditButton.pop_submit.instance.parent.children:",
+                                   instance.parent.children[3].children)
+        f_timeInput1 = instance.parent.children[3].children[6]  # these are the text inputs with the values we will check
+        f_timeInput2 = instance.parent.children[3].children[5]
+        f_timeInput3 = instance.parent.children[3].children[4]
+        f_timeInput4 = instance.parent.children[3].children[2]
+        f_timeInput5 = instance.parent.children[3].children[1]
+        f_timeInput6 = instance.parent.children[3].children[0]
         if self.c_debug > 0: print("DateEditButton.pop_submit.children[8]:", f_timeInput1.text)
         if self.c_debug > 0: print("DateEditButton.pop_submit.children[7]:", f_timeInput2.text)
         if self.c_debug > 0: print("DateEditButton.pop_submit.children[6]:", f_timeInput3.text)
         if self.c_debug > 0: print("DateEditButton.pop_submit.children[5]:", f_timeInput4.text)
         if self.c_debug > 0: print("DateEditButton.pop_submit.children[4]:", f_timeInput5.text)
         if self.c_debug > 0: print("DateEditButton.pop_submit.children[3]:", f_timeInput6.text)
+        # if the input is invalid, the button shouldn't work.
+        # This lets the user know a mistake happened before their work is lost when the popup closes
         if self.areDateStringsValid(f_timeInput1.text, f_timeInput2.text, f_timeInput3.text, f_timeInput4.text, f_timeInput5.text, f_timeInput6.text):
-            f_datetime = datetime(getNumberBlank(f_timeInput1.text),
-                                  getNumberBlank(f_timeInput2.text),
-                                  getNumberBlank(f_timeInput3.text),
-                                  getNumberBlank(f_timeInput4.text),
-                                  getNumberBlank(f_timeInput5.text),
-                                  getNumberBlank(f_timeInput6.text))
+            f_datetime = datetime(int(f_timeInput1.text),
+                                  getNumberBlank1(f_timeInput2.text),
+                                  getNumberBlank1(f_timeInput3.text),
+                                  getNumberBlank0(f_timeInput4.text),
+                                  getNumberBlank0(f_timeInput5.text),
+                                  getNumberBlank0(f_timeInput6.text))
             self.setDateValue(f_datetime)
             self.pops.dismiss()
-        # TODO: allow special case for 2 empty inputs, implying the user wants to remove series metadata
         # TODO: add feedback for bad inputs
 
     def areDateStringsValid(self, p_year, p_month, p_day, p_hour, p_minute, p_second):
         # before we accept this date time input, we have to check if it's valid
         # and we just have a bunch of strings at this point
-        if p_year == "" or (p_year.isnumeric()==False):
+        if p_year == "" or (p_year.isnumeric()==False): #year cannot be blank
             return False
         if (isNumberBlank(p_month) and isNumberBlank(p_day) and isNumberBlank(p_hour)
                 and isNumberBlank(p_minute) and isNumberBlank(p_second))==False:
             return False
         try:
             #we'll try to create a datatime. its constructor will find any problems for us
-            dt_obj = datetime(getNumberBlank(p_year), getNumberBlank(p_month), getNumberBlank(p_day),
-                              getNumberBlank(p_hour), getNumberBlank(p_minute), getNumberBlank(p_second))
+            if self.c_debug > 0: print('DateEditButton.areDateStringsValid() create date:', int(p_year), getNumberBlank1(p_month), getNumberBlank1(p_day),
+                              getNumberBlank0(p_hour), getNumberBlank0(p_minute), getNumberBlank0(p_second))
+            dt_obj = datetime(int(p_year), getNumberBlank1(p_month), getNumberBlank1(p_day),
+                              getNumberBlank0(p_hour), getNumberBlank0(p_minute), getNumberBlank0(p_second))
             return True
         except:
             # TODO: add exception saying that number isn't valid
@@ -183,31 +195,50 @@ class DateEditButton(Button):
             return False
 
     def fire_popup(self):
-        # this builds the interface inside the pupup, then makes it appear on the screen
+        # this builds the interface inside the popup, then makes it appear on the screen
         f_widget = BoxLayout(orientation='vertical')
         self.pops.content = f_widget
-
+        timeblock = BoxLayout(orientation='horizontal', size_hint_y=None, height=30)
         insInput1 = TextInput(multiline=False, size_hint=(None,None), height=30, width=50,
-                              input_filter='int', text=str(self.timeChunk1))
+                              input_filter='int', hint_text='YYYY')
         insInput2 = TextInput(multiline=False, size_hint=(None,None), height=30, width=30,
-                              input_filter='int', text=str(self.timeChunk2))
+                              input_filter='int', hint_text='M')
         insInput3 = TextInput(multiline=False, size_hint=(None,None), height=30, width=30,
-                              input_filter='int', text=str(self.timeChunk3))
+                              input_filter='int', hint_text='D')
         insInput4 = TextInput(multiline=False, size_hint=(None,None), height=30, width=30,
-                              input_filter='int', text=str(self.timeChunk4))
+                              input_filter='int', hint_text='h')
         insInput5 = TextInput(multiline=False, size_hint=(None,None), height=30, width=30,
-                              input_filter='int', text=str(self.timeChunk5))
+                              input_filter='int', hint_text='m')
         insInput6 = TextInput(multiline=False, size_hint=(None,None), height=30, width=30,
-                              input_filter='int', text=str(self.timeChunk6))
-        insLabel = Label(text=str(self.timeChunk1))
+                              input_filter='int', hint_text='s')
+        if self.hasDate:
+            insInput1.text = str(self.timeChunk1)
+            insInput2.text = str(self.timeChunk2)
+            insInput3.text = str(self.timeChunk3)
+            insInput4.text = str(self.timeChunk4)
+            insInput5.text = str(self.timeChunk5)
+            insInput6.text = str(self.timeChunk6)
+        else:
+            insInput1.text = ""
+            insInput2.text = ""
+            insInput3.text = ""
+            insInput4.text = ""
+            insInput5.text = ""
+            insInput6.text = ""
+        cuteLabel1 = Label(text="Date", height=30)
+        cuteLabel2 = Label(text="Time", height=30)
 
-        f_widget.add_widget(insInput1)
-        f_widget.add_widget(insInput2)
-        f_widget.add_widget(insInput3)
-        f_widget.add_widget(insInput4)
-        f_widget.add_widget(insInput5)
-        f_widget.add_widget(insInput6)
-        f_widget.add_widget(insLabel)
+        timeblock.add_widget(cuteLabel1)
+        timeblock.add_widget(insInput1)
+        timeblock.add_widget(insInput2)
+        timeblock.add_widget(insInput3)
+        timeblock.add_widget(cuteLabel2)
+        timeblock.add_widget(insInput4)
+        timeblock.add_widget(insInput5)
+        timeblock.add_widget(insInput6)
+        f_widget.add_widget(Label())
+        f_widget.add_widget(timeblock)
+        f_widget.add_widget(Label())
         f_button1 = Button(text='submit button', on_press=self.pop_submit)
         f_button2 = Button(text='cancel button', on_press=self.pop_cancel)
         f_widget.add_widget(f_button1)
