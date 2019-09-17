@@ -10,9 +10,9 @@ from kivy.properties import StringProperty, NumericProperty, ListProperty
 import SimulateOutside
 
 Builder.load_string('''
-<SimpleButton>:
+<SeriesButton>:
     on_press: self.fire_popup()
-<SimplePopup>:
+<SeriesPopup>:
     id:pop
     size_hint: .4, .6
     pos_hint: {'x': .6, 'y': .2}
@@ -48,7 +48,7 @@ class RootWidget(BoxLayout):
     def __init__(self, **kwargs):
         super(RootWidget, self).__init__(**kwargs)
         # all of this stuff will need to be added into whatever user interface you use
-        popup_trigger = SimpleButton()
+        popup_trigger = SeriesButton()
         self.top_label1 = ColorLabel(size_hint_y=None, height=50, text=popup_trigger.seriesName, bcolor=[.3, .7, .5, 1])
         self.top_label2 = ColorLabel(size_hint_y=None, height=50, text=str(popup_trigger.seriesIns),
                                      bcolor=[.6, .3, .4, 1])
@@ -64,35 +64,29 @@ class RootWidget(BoxLayout):
         self.top_label2.text = str(value)
 
 
-class seriesFrame(BoxLayout):
+class SeriesPopup(Popup):
     def __init__(self, **kwargs):
-        super(seriesFrame, self).__init__(**kwargs)
-
-
-class SimplePopup(Popup):
-    def __init__(self, **kwargs):
-        super(SimplePopup, self).__init__(**kwargs)
+        super(SeriesPopup, self).__init__(**kwargs)
     # the widget we add in here actually does everything. so this is empty
 
-
 # this button is reuasable
-class SimpleButton(Button):
+class SeriesButton(Button):
     # this is the button that triggers the popup being created
 
     # these are the two values that make up the series information
     seriesIns = NumericProperty(4)
     seriesName = StringProperty("Frog's big day")
-    pops = SimplePopup()
+    pops = SeriesPopup()
 
     def __init__(self, **kwargs):
-        super(SimpleButton, self).__init__(**kwargs)
+        super(SeriesButton, self).__init__(**kwargs)
         self.c_debug = 0
         self.text = "Fire Popup !"
 
     def setSeriesValue(self, p_name, p_ins):
         # this calls an outside script to set the series value in a picture file
         # then the new value is passed back to us for the user interface to display
-        if self.c_debug > 0: print("SimpleButton.setSeriesValue:", p_name, p_ins)
+        if self.c_debug > 0: print("SeriesButton.setSeriesValue:", p_name, p_ins)
         f_success = SimulateOutside.setSeries(SimulateOutside.g_file, p_name, p_ins)
         if f_success:
             self.seriesName, self.seriesIns = SimulateOutside.getSeries(SimulateOutside.g_file)
@@ -101,7 +95,7 @@ class SimpleButton(Button):
 
     def pop_cancel(self, instance):
         # any input from the user is discarded and the popup is closed
-        if self.c_debug > 0: print("SimpleButton.pop_cancel.instance:", instance)
+        if self.c_debug > 0: print("SeriesButton.pop_cancel.instance:", instance)
         self.pops.dismiss()
 
     def pop_submit(self, instance):

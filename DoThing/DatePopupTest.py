@@ -13,7 +13,7 @@ import SimulateOutside
 Builder.load_string('''
 <DateEditButton>:
     on_press: self.fire_popup()
-<SimplePopup>:
+<DatePopup>:
     id:pop
     size_hint: .4, .6
     pos_hint: {'x': .6, 'y': .2}
@@ -64,39 +64,10 @@ class RootWidget(BoxLayout):
         # this function updates the installment number shown on the user interface whenever the value changes
         self.top_label0.text = str(datetime.strptime(value, "%Y-%m-%dT%H:%M:%S"))
 
-
-
-
-class seriesFrame(BoxLayout):
+class DatePopup(Popup):
     def __init__(self, **kwargs):
-        super(seriesFrame, self).__init__(**kwargs)
-
-
-class SimplePopup(Popup):
-    def __init__(self, **kwargs):
-        super(SimplePopup, self).__init__(**kwargs)
+        super(DatePopup, self).__init__(**kwargs)
     # the widget we add in here actually does everything. so this is empty
-
-
-def isNumberBlank(p_str):
-    #decides if string is useable number
-    #we will count '' as a number because we'll replace those with 0 or 1
-    return ((p_str.isnumeric()) or (p_str==""))
-
-def getNumberBlank0(p_str):
-    #gives us a useable number from a string
-    #p_str must be tested by isNumberBlank() before being passed to this function
-    if(p_str==""):
-        return 0
-    return int(p_str)
-
-def getNumberBlank1(p_str):
-    #gives us a useable number from a string
-    #p_str must be tested by isNumberBlank() before being passed to this function
-    if(p_str==""):
-        return 1
-    return int(p_str)
-
 
 # this button is reuasable
 class DateEditButton(Button):
@@ -110,12 +81,31 @@ class DateEditButton(Button):
     timeChunk4 = NumericProperty(sampledate.timetuple()[3])
     timeChunk5 = NumericProperty(sampledate.timetuple()[4])
     timeChunk6 = NumericProperty(sampledate.timetuple()[5])
-    pops = SimplePopup()
+    pops = DatePopup()
 
     def __init__(self, **kwargs):
         super(DateEditButton, self).__init__(**kwargs)
         self.c_debug = 0
         self.text = "Fire Popup !"
+
+    def isNumberBlank(self, p_str):
+        # decides if string is useable number
+        # we will count '' as a number because we'll replace those with 0 or 1
+        return ((p_str.isnumeric()) or (p_str == ""))
+
+    def getNumberBlank0(self, p_str):
+        # gives us a useable number from a string
+        # p_str must be tested by isNumberBlank() before being passed to this function
+        if (p_str == ""):
+            return 0
+        return int(p_str)
+
+    def getNumberBlank1(self, p_str):
+        # gives us a useable number from a string
+        # p_str must be tested by isNumberBlank() before being passed to this function
+        if (p_str == ""):
+            return 1
+        return int(p_str)
 
     def setDateValue(self, p_ins):
         # this calls an outside script to set the series value in a picture file
@@ -165,11 +155,11 @@ class DateEditButton(Button):
         # This lets the user know a mistake happened before their work is lost when the popup closes
         if self.areDateStringsValid(f_timeInput1.text, f_timeInput2.text, f_timeInput3.text, f_timeInput4.text, f_timeInput5.text, f_timeInput6.text):
             f_datetime = datetime(int(f_timeInput1.text),
-                                  getNumberBlank1(f_timeInput2.text),
-                                  getNumberBlank1(f_timeInput3.text),
-                                  getNumberBlank0(f_timeInput4.text),
-                                  getNumberBlank0(f_timeInput5.text),
-                                  getNumberBlank0(f_timeInput6.text))
+                                  self.getNumberBlank1(f_timeInput2.text),
+                                  self.getNumberBlank1(f_timeInput3.text),
+                                  self.getNumberBlank0(f_timeInput4.text),
+                                  self.getNumberBlank0(f_timeInput5.text),
+                                  self.getNumberBlank0(f_timeInput6.text))
             self.setDateValue(f_datetime)
             self.pops.dismiss()
         # TODO: add feedback for bad inputs
@@ -179,15 +169,18 @@ class DateEditButton(Button):
         # and we just have a bunch of strings at this point
         if p_year == "" or (p_year.isnumeric()==False): #year cannot be blank
             return False
-        if (isNumberBlank(p_month) and isNumberBlank(p_day) and isNumberBlank(p_hour)
-                and isNumberBlank(p_minute) and isNumberBlank(p_second))==False:
+        if (self.isNumberBlank(p_month) and self.isNumberBlank(p_day) and self.isNumberBlank(p_hour)
+                and self.isNumberBlank(p_minute) and self.isNumberBlank(p_second))==False:
             return False
         try:
             #we'll try to create a datatime. its constructor will find any problems for us
-            if self.c_debug > 0: print('DateEditButton.areDateStringsValid() create date:', int(p_year), getNumberBlank1(p_month), getNumberBlank1(p_day),
-                              getNumberBlank0(p_hour), getNumberBlank0(p_minute), getNumberBlank0(p_second))
-            dt_obj = datetime(int(p_year), getNumberBlank1(p_month), getNumberBlank1(p_day),
-                              getNumberBlank0(p_hour), getNumberBlank0(p_minute), getNumberBlank0(p_second))
+            if self.c_debug > 0: print('DateEditButton.areDateStringsValid() create date:', int(p_year),
+                                       self.getNumberBlank1(p_month), self.getNumberBlank1(p_day),
+                                       self.getNumberBlank0(p_hour), self.getNumberBlank0(p_minute),
+                                       self.getNumberBlank0(p_second))
+            dt_obj = datetime(int(p_year), self.getNumberBlank1(p_month), self.getNumberBlank1(p_day),
+                              self.getNumberBlank0(p_hour), self.getNumberBlank0(p_minute),
+                              self.getNumberBlank0(p_second))
             return True
         except:
             # TODO: add exception saying that number isn't valid
