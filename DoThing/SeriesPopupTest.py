@@ -50,8 +50,11 @@ class RootWidget(BoxLayout):
         # all of this stuff will need to be added into whatever user interface you use
         popup_trigger = SeriesButton()
         self.top_label1 = ColorLabel(size_hint_y=None, height=50, text=popup_trigger.seriesName, bcolor=[.3, .7, .5, 1])
-        self.top_label2 = ColorLabel(size_hint_y=None, height=50, text=str(popup_trigger.seriesIns),
-                                     bcolor=[.6, .3, .4, 1])
+        self.top_label2 = ColorLabel(size_hint_y=None, height=50, bcolor=[.6, .3, .4, 1])
+        if popup_trigger.seriesIns==-1:
+            self.top_label2.text = ""
+        else:
+            self.top_label2.text=str(popup_trigger.seriesIns)
         # this detects changes in the series values and calls changes to the user interface be made
         popup_trigger.bind(seriesName=self.top_label1.setter('text'))
         popup_trigger.bind(seriesIns=self.update_installment)
@@ -61,7 +64,10 @@ class RootWidget(BoxLayout):
 
     def update_installment(self, instance, value):
         # this function updates the installment number shown on the user interface whenever the value changes
-        self.top_label2.text = str(value)
+        if value == -1: #this implies no series exists, thus no number should be displayed
+            self.top_label2.text = ""
+        else:
+            self.top_label2.text = str(value)
 
 
 class SeriesPopup(Popup):
@@ -74,8 +80,8 @@ class SeriesButton(Button):
     # this is the button that triggers the popup being created
 
     # these are the two values that make up the series information
-    seriesIns = NumericProperty(4)
-    seriesName = StringProperty("Frog's big day")
+    seriesIns = NumericProperty(SimulateOutside.getSeries(SimulateOutside.g_file)[1])
+    seriesName = StringProperty(SimulateOutside.getSeries(SimulateOutside.g_file)[0])
     pops = SeriesPopup()
 
     def __init__(self, **kwargs):
@@ -110,7 +116,15 @@ class SeriesButton(Button):
             f_installment = int(f_insInput.text)
             self.setSeriesValue(f_name, f_installment)
             self.pops.dismiss()
-        # TODO: allow special case for 2 empty inputs, implying the user wants to remove series metadata
+        # special case for 2 empty inputs, implying the user wants to remove series metadata
+        if f_nameInput.text=="" and f_insInput.text=="":
+            #to avoid unneeded calls to outside script, lets check if series is already nonexistent
+            if self.seriesIns==-1 and self.seriesName=="":
+                self.pops.dismiss()
+            else:
+                if SimulateOutside.wipeSeries(SimulateOutside.g_file):
+                    self.seriesName, self.seriesIns = ("", -1)
+            self.pops.dismiss()
         # TODO: add feedback for bad inputs
 
     def isNameValid(self, p_name):
@@ -134,11 +148,21 @@ class SeriesButton(Button):
         f_widget = BoxLayout(orientation='vertical')
         self.pops.content = f_widget
 
-        nameInput = TextInput(multiline=False, size_hint_y=None, height=30, text=self.seriesName)
-        insInput = TextInput(multiline=False, size_hint_y=None, height=30, input_filter='int', text=str(self.seriesIns))
+        nameInput = TextInput(multiline=False, size_hint_y=None, height=30, text=self.seriesName,
+                              hint_text="series name")
+        insInput = TextInput(multiline=False, size_hint_y=None, height=30, input_filter='int', hint_text="#")
+        if SimulateOutside.containsSeries(SimulateOutside.g_file):
+            insInput.text = str(self.seriesIns)
+        else:
+            insInput.text = ""
 
         nameLabel = Label(text=self.seriesName)
-        insLabel = Label(text=str(self.seriesIns))
+        insLabel = Label()
+        #if no series is set, the local installment value is -1. We don't want to display that.
+        if SimulateOutside.containsSeries(SimulateOutside.g_file):
+            insLabel.text = str(self.seriesIns)
+        else:
+            insLabel.text = ""
 
         f_widget.add_widget(nameInput)
         f_widget.add_widget(insInput)
