@@ -19,7 +19,7 @@ Builder.load_string('''
     pos_hint: {'x': .6, 'y': .2}
     pos: 200, 0
     auto_dismiss: False
-    title: 'Hello world!!'
+    title: 'Pictures in a sequence'
 
 ''')
 
@@ -40,7 +40,7 @@ class SeriesButton(Button):
     def __init__(self, **kwargs):
         super(SeriesButton, self).__init__(**kwargs)
         self.c_debug = 0
-        self.text = "Fire Popup !"
+        self.text = "Edit"
 
     def setSeriesValue(self, p_name, p_ins):
         # this calls an outside script to set the series value in a picture file
@@ -60,15 +60,19 @@ class SeriesButton(Button):
     def pop_submit(self, instance):
         # this happens when the submit button on the popup is pressed.
         # this checks input, tells the program the input is ready, then closes the popup
-        f_nameInput = instance.parent.children[5]  # I think this would be a pointer in c++
-        f_insInput = instance.parent.children[4]  # these are the text inputs with the values we will check
+        f_nameInput = instance.parent.children[4]  # I think this would be a pointer in c++
+        f_insInput = instance.parent.children[2]  # these are the text inputs with the values we will check
         # if the input is invalid, the button shouldn't work.
         # This lets the user know a mistake happened before their work is lost when the popup closes
         if self.isNameValid(f_nameInput.text) and self.isInstallmentValid(f_insInput.text):
             f_name = f_nameInput.text
             f_installment = int(f_insInput.text)
-            self.setSeriesValue(f_name, f_installment)
-            self.pops.dismiss()
+            # to avoid unneeded calls to outside script, lets check if series is these values
+            if self.seriesIns == f_installment and self.seriesName == f_name:
+                self.pops.dismiss()
+            else:
+                self.setSeriesValue(f_name, f_installment)
+                self.pops.dismiss()
         # special case for 2 empty inputs, implying the user wants to remove series metadata
         if f_nameInput.text=="" and f_insInput.text=="":
             #to avoid unneeded calls to outside script, lets check if series is already nonexistent
@@ -109,20 +113,18 @@ class SeriesButton(Button):
         else:
             insInput.text = ""
 
-        nameLabel = Label(text=self.seriesName)
-        insLabel = Label()
-        #if no series is set, the local installment value is -1. We don't want to display that.
-        if SimulateOutside.containsSeries(SimulateOutside.g_file):
-            insLabel.text = str(self.seriesIns)
-        else:
-            insLabel.text = ""
+        #these are additional labels we don't need in the user interface
+        nameLabel = Label(text="Name of this series")
+        insLabel = Label(text="Installment # in series")
 
-        f_widget.add_widget(nameInput)
-        f_widget.add_widget(insInput)
         f_widget.add_widget(nameLabel)
+        f_widget.add_widget(nameInput)
         f_widget.add_widget(insLabel)
-        f_button1 = Button(text='submit button', on_press=self.pop_submit)
-        f_button2 = Button(text='cancel button', on_press=self.pop_cancel)
+        f_widget.add_widget(insInput)
+        #f_widget.add_widget(nameLabel)
+        #f_widget.add_widget(insLabel)
+        f_button1 = Button(text='Apply Changes', on_press=self.pop_submit)
+        f_button2 = Button(text='Cancel', on_press=self.pop_cancel)
         f_widget.add_widget(f_button1)
         f_widget.add_widget(f_button2)
         self.pops.open()

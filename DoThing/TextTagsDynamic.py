@@ -27,7 +27,7 @@ Builder.load_string('''
 		orientation: 'vertical'
 		DynamicTagList:
         thisText:
-            pos: (100, 20)
+            pos: (900, 20)
             on_text_validate: print(self.parent.children[1].addNewTag(self.giveText()))
 
 <RootWidget>:
@@ -38,9 +38,6 @@ Builder.load_string('''
         HBoxWidget:
 
 ''')
-
-
-
 
 class RootWidget(BoxLayout):
     def __init__(self, **kwargs):

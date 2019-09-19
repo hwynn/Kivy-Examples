@@ -47,7 +47,9 @@ def getDesc(p_filename):
     return g_desc
 
 def setDesc(p_filename, p_value):
+    global g_desc
     if len(p_value)>10 or len(p_value)<3:
+        g_desc = p_value
         return True
     else:
         return False
@@ -116,20 +118,20 @@ def containsOrgDate(p_filename):
     return not g_originaldate == None
 
 def getOriginalDate(p_filename):
-    print("SimulateOutside.getOriginalDate()", g_originaldate)
+    #print("SimulateOutside.getOriginalDate()", g_originaldate)
     if g_originaldate==None:
         return datetime.datetime(1, 1, 1, 0, 0, 0)
     return g_originaldate
 
 def setOriginalDate(p_filename, p_val):
-    print("SimulateOutside.setOriginalDate():", p_val, g_originaldate)
+    #print("SimulateOutside.setOriginalDate():", p_val, g_originaldate)
     global g_originaldate
     g_originaldate = p_val
     return True
 
 # ----- series
-#g_series = ("Sample Quest", 12)
-g_series = None
+g_series = ("Sample Quest", 12)
+#g_series = None
 
 def containsSeries(p_filename):
     return not g_series == None

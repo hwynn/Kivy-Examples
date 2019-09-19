@@ -9,7 +9,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import StringProperty
 from kivy.uix.textinput import TextInput
 from kivy.properties import BooleanProperty, ObjectProperty, ListProperty
-from ChangeableLabel0 import StretchingLabel
+from ChangeableLabel import StretchingLabel
 from PrevNext import NextPrevBar
 import SimulateOutside
 from lib.modules.adaptive_grid_layout import Adaptive_GridLayout

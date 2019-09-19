@@ -45,7 +45,7 @@ class DateEditButton(Button):
     def __init__(self, **kwargs):
         super(DateEditButton, self).__init__(**kwargs)
         self.c_debug = 0
-        self.text = "Fire Popup !"
+        self.text = "change date"
 
     def isNumberBlank(self, p_str):
         # decides if string is useable number
